@@ -1,11 +1,27 @@
+/* eslint-disable prettier/prettier */
 import express from 'express'
+import helmet from 'helmet'
+import cors from 'cors'
+
+import config from './utils/config'
+import logger from './utils/logger'
+import errors from './utils/errors'
+
+import router from './routes'
 
 const app = express()
 
-const port = 3000
+app.use(logger.middleware)
+app.use(helmet())
+app.use(
+    cors({
+        origin: config.origin,
+    }),
+)
 
-app.get('/', (req, res) =>{
-    req.send({msg:'Hello There' })
-})
+app.use(router)
 
-app.listen(port)
+app.use(errors.notFound)
+app.use(errors.errorHandler)
+
+app.listen(config.port)
